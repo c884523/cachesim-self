@@ -37,11 +37,11 @@ struct CACHE_BLK_T
 struct CACHE_T
 {
 	//construtor,destructor
-	CACHE_T(char *name,int bsize,int assoc,int nsets,enum CACHE_POLICY policy);
+	CACHE_T(const char *name,int bsize,int assoc,int nsets,enum CACHE_POLICY policy);
 	~CACHE_T();
 
 	/* parameters */
-	char *name;			/* cache name */
+	const char *name;   /* cache name */
 	int bsize;			/* block size in bytes */
 	int assoc;			/* cache associativity */
 	int nsets;			/* number of sets */
@@ -62,14 +62,15 @@ struct CACHE_T
 	struct CACHE_BLK_T *blks;			/* pointer to data blocks allocation */
 
 	/* miss/replacement handler*/
-	HIT_MISS block_access(enum MEM_CMD cmd,uint64_t addr);
+	HIT_MISS block_access(char cmd,uint64_t addr);
 };
 
+void dump_cache(CACHE_T *cp);	
 
 /* access a cache, perform a CMD operation on cache CP*/
 void 
 cache_access(struct CACHE_T *cp,	/* cache to access */
-		enum MEM_CMD cmd,		/* access type, Read or Write */
+		char     cmd,		/* access type, Read or Write */
 		uint64_t addr);		/* address of access */
 
 #endif /* CACHE_H */
