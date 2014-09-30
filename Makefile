@@ -5,9 +5,8 @@ sim_main.o:
 	g++ -c sim_main.cpp
 cache.o:
 	g++ -c cache.cpp
-
 .PHONY: clean run
 clean:
-	rm obj/*.o sim_main
+	rm obj/*.o sim_cache
 run:
 	./sim_cache

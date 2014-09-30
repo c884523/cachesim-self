@@ -23,11 +23,11 @@ CACHE_T::CACHE_T(const char *name,int bsize,int assoc,int nsets,enum CACHE_POLIC
 	this->index_bits = log2(nsets);
 	this->tag_bits   = 64-(this->word_bits + this->block_bits + this->index_bits);
 	//per cache stat
-	this->hits = 0;
-	this->misses=0;
-	this->replacements=0;
-	this->writebacks = 0;
-	this->invalidations=0;
+	this->hits   = 0;
+	this->misses = 0;
+	this->replacements  = 0;
+	this->writebacks    = 0;
+	this->invalidations = 0;
 	//cache block array
 	this->blks = (CACHE_BLK_T*) malloc(sizeof(CACHE_BLK_T)*assoc*nsets);	
 	for(int i=0 ; i < assoc*nsets ; i++){
@@ -35,6 +35,7 @@ CACHE_T::CACHE_T(const char *name,int bsize,int assoc,int nsets,enum CACHE_POLIC
 		this->blks[i].dirty = false;
 		this->blks[i].tag   = 0;
 		this->blks[i].data  = (uint64_t*) calloc(bsize/sizeof(uint64_t), sizeof(uint64_t));
+		this->blks[i].counter = 0;
 	}
 }
 CACHE_T::~CACHE_T()
@@ -51,43 +52,86 @@ CACHE_T::block_access(char cmd, uint64_t addr)
 	uint64_t in_tag   = addr>>(64-tag_bits);
 	uint64_t in_set   = (addr<<tag_bits)>>(word_bits+block_bits);	
 	uint64_t in_index = in_set * assoc;
-	printf("%c\n",cmd);	
+	//printf("%lx\n",in_tag);
 	/*search the block*/
 	//READ blcok	
 	if(cmd == 'R'){
 		for(int i=0; i < assoc ;i++,in_index++)
 		{
-			if(blks[in_index].valid==true && 
-			   blks[in_index].tag == in_tag)//tag is the same & valid
+			if(blks[in_index].valid == true && 
+					blks[in_index].tag == in_tag)//tag is the same & valid
 			{
+				blks[in_index].counter = 0;//go stack top
 				hits++;
 				return READ_HIT;
 			}
 		}
 		//no valid & no same tag
+		CACHE_BLK_T *victim_blk = choose_victim_blk(in_set*assoc);
+		victim_blk->tag = in_tag;  /*update newest data*/
+		victim_blk->valid = true;
+		victim_blk->dirty = false;
+		victim_blk->counter = 0;
 		misses++;
 		return READ_MISS;
 	}
 	else{//WRITE block
 		for(int i=0; i < assoc ;i++,in_index++)
 		{
-			if(blks[in_index].valid==true && 
-			   blks[in_index].tag == in_tag)//tag is the same & valid
+			if(blks[in_index].valid == true && 
+					blks[in_index].tag == in_tag)//tag is the same & valid
 			{
+				blks[in_index].counter = 0;//go stack top
 				hits++;
 				if(blks[in_index].dirty == false){//no write back
 					blks[in_index].dirty = true;
 					return WRITE_HIT;
 				}
-				else 
+				else{
+					blks[in_index].dirty = true;
 					return WRITE_HIT_BACK;
+				}
 			}
 		}
 		//no valid & no same tag
+		CACHE_BLK_T *victim_blk = choose_victim_blk(in_set*assoc);
+		victim_blk->tag = in_tag;  /*update newest data*/
+		victim_blk->valid = true;
+		victim_blk->dirty = true;  /*write allocate,so also dirty*/
+		victim_blk->counter = 0;
 		misses++;
 		return WRITE_MISS;
 	}
 }
+
+
+/*choose a victim by replacement policy*/
+CACHE_BLK_T* 
+CACHE_T::choose_victim_blk(uint64_t in_index)
+{
+	switch(policy){
+		case LRU:{
+			int max=0,out_index=in_index;
+			for(int i=0; i<assoc ; i++,in_index++){
+				if(blks[in_index].valid == true){/*invalid is first choose*/
+					out_index = in_index;
+					break;
+				}
+				else{ 							 /*valid, choose the max count*/
+					if(blks[in_index].counter > max){
+						max = blks[in_index].counter;
+						out_index = in_index;
+					}
+					blks[in_index].counter++;    /*counter+1*/
+				}	
+			}
+			return &blks[out_index];
+		}
+		break;
+	}
+}
+
+/*print the cache information*/
 void dump_cache(CACHE_T *cp)
 {
 	printf("============================\n");
@@ -108,8 +152,10 @@ void dump_cache(CACHE_T *cp)
 	//per cache stat
 	printf("hits         = %-10d  |\n",cp->hits);
 	printf("misses       = %-10d  |\n",cp->misses);
-	printf("replacements = %-10d  |\n",cp->replacements);
-	printf("writebacks   = %-10d  |\n",cp->writebacks);
-	printf("invalidations= %-10d  |\n",cp->invalidations);
+	printf("hit rate = %-10.3f      |\n",100*(float)cp->hits/(float)(cp->hits+cp->misses));
+	printf("miss rate = %-10.3f     |\n",100*(float)cp->misses/(float)(cp->hits+cp->misses));
+	//printf("replacements = %-10d  |\n",cp->replacements);
+	//printf("writebacks   = %-10d  |\n",cp->writebacks);
+	//printf("invalidations= %-10d  |\n",cp->invalidations);
 	printf("----------------------------\n\n\n");
 }

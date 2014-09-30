@@ -11,11 +11,6 @@ enum CACHE_POLICY {
 	RAMDOM,		/* replace a random block */
 	FIFO		/* replace the oldest block in the set */
 };
-/* memory comand*/
-enum MEM_CMD{
-	READ,
-	WRITE
-};
 /* access hit or miss*/
 enum HIT_MISS{
 	READ_HIT,
@@ -31,6 +26,8 @@ struct CACHE_BLK_T
 	bool 	 dirty;
 	uint64_t tag;	/* data block tag value */
 	uint64_t *data;	/* cache block valuem, may multi-word*/	
+	//LRU Hardware unit
+	uint32_t counter; 
 };
 
 /* cache definition */
@@ -61,16 +58,12 @@ struct CACHE_T
 	/* data blocks */
 	struct CACHE_BLK_T *blks;			/* pointer to data blocks allocation */
 
-	/* miss/replacement handler*/
+	/* data access function*/
 	HIT_MISS block_access(char cmd,uint64_t addr);
+	/* miss/replacement handler*/
+	CACHE_BLK_T*  choose_victim_blk(uint64_t in_index);
 };
 
 void dump_cache(CACHE_T *cp);	
-
-/* access a cache, perform a CMD operation on cache CP*/
-void 
-cache_access(struct CACHE_T *cp,	/* cache to access */
-		char     cmd,		/* access type, Read or Write */
-		uint64_t addr);		/* address of access */
 
 #endif /* CACHE_H */
