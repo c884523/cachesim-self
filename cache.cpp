@@ -22,6 +22,8 @@ CACHE_T::CACHE_T(const char *name,int bsize,int assoc,int nsets,enum CACHE_POLIC
 	this->block_bits = log2(bsize/sizeof(uint64_t));
 	this->index_bits = log2(nsets);
 	this->tag_bits   = 64-(this->word_bits + this->block_bits + this->index_bits);
+	//mask
+	this->tag_mask   = (0xffffffffffffffff<<tag_bits)>>tag_bits;
 	//per cache stat
 	this->hits   = 0;
 	this->misses = 0;
@@ -50,9 +52,8 @@ CACHE_T::block_access(char cmd, uint64_t addr)
 {
 	/*decode the addr*/
 	uint64_t in_tag   = addr>>(64-tag_bits);
-	uint64_t in_set   = (addr<<tag_bits)>>(word_bits+block_bits);	
+	uint64_t in_set   = addr&tag_mask >> (word_bits+block_bits);	
 	uint64_t in_index = in_set * assoc;
-	//printf("%lx\n",in_tag);
 	/*search the block*/
 	//READ blcok	
 	if(cmd == 'R'){
@@ -113,16 +114,16 @@ CACHE_T::choose_victim_blk(uint64_t in_index)
 		case LRU:{
 			int max=0,out_index=in_index;
 			for(int i=0; i<assoc ; i++,in_index++){
-				if(blks[in_index].valid == true){/*invalid is first choose*/
+				if(blks[in_index].valid == false){   /*invalid is first choose*/
 					out_index = in_index;
 					break;
 				}
-				else{ 							 /*valid, choose the max count*/
-					if(blks[in_index].counter > max){
+				else{ 							     /*valid, choose the max count*/
+					if(blks[in_index].counter > max){/*if current blk's counter > max, record the index & update max*/
 						max = blks[in_index].counter;
 						out_index = in_index;
 					}
-					blks[in_index].counter++;    /*counter+1*/
+					blks[in_index].counter++;        /*if <= max , current counter+1*/
 				}	
 			}
 			return &blks[out_index];
@@ -144,10 +145,10 @@ void dump_cache(CACHE_T *cp)
 	printf("policy      = LRU          |\n");
 	printf("----------------------------\n");
 	//segment bits
-	printf("word_btis  = %-2d            |\n",cp->word_bits);
-	printf("block_btis = %-2d            |\n",cp->block_bits);
-	printf("index_btis = %-2d            |\n",cp->index_bits);
-	printf("tag_btis   = %-2d            |\n",cp->tag_bits);
+	printf("word_btis  = %-2lu           |\n",cp->word_bits);
+	printf("block_btis = %-2lu           |\n",cp->block_bits);
+	printf("index_btis = %-2lu           |\n",cp->index_bits);
+	printf("tag_btis   = %-2lu           |\n",cp->tag_bits);
 	printf("----------------------------\n");
 	//per cache stat
 	printf("hits         = %-10d  |\n",cp->hits);

@@ -44,10 +44,12 @@ struct CACHE_T
 	int nsets;			/* number of sets */
 	enum CACHE_POLICY policy;	/* cache replacement policy */
 	/*segment bit*/
-	int word_bits;
-	int block_bits;
-	int index_bits;
-	int tag_bits;
+	uint64_t word_bits;
+	uint64_t block_bits;
+	uint64_t index_bits;
+	uint64_t tag_bits;
+	/*mask bits*/
+	uint64_t tag_mask;
 	/* per-cache stats */
 	uint32_t hits;		/* total number of hits */
 	uint32_t misses;		/* total number of misses */
