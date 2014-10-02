@@ -126,6 +126,7 @@ CACHE_T::choose_victim_blk(uint64_t in_index)
 					blks[in_index].counter++;        /*if <= max , current counter+1*/
 				}	
 			}
+			//printf("%d\n",out_index);
 			return &blks[out_index];
 		}
 		break;
