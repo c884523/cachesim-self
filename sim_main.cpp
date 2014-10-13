@@ -3,9 +3,9 @@
 #include"cache.h"
 using namespace std;
 /*block size, n-ways, n-sets*/
-CACHE_T DL1("L1",64,L1_W,1,LRU);//32KB,fully-associate,LRU
+CACHE_T DL1("L1",32,L1_W,L1_S,LRU);//32KB,fully-associate,LRU
 #if SET_L2==1
-CACHE_T DL2("L2",64,L2_W,1,LRU);//256KB,fully-associate,LRU
+CACHE_T DL2("L2",32,L2_W,L2_S,LRU);//256KB,fully-associate,LRU
 #endif
 int main(int argc,char **argv)
 {
