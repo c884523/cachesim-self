@@ -1,0 +1,41 @@
+============================
+L1 cache:                  |
+============================
+block size  = 32    Bytes  |
+ways        = 4            |
+set numbers = 1            |
+total size  = 0     KB     |
+policy      = LRU          |
+----------------------------
+word_btis  = 3            |
+block_btis = 2            |
+index_btis = 0            |
+tag_btis   = 59           |
+----------------------------
+hits         = 371174766   |
+misses       = 388795660   |
+hit rate = 48.841          |
+miss rate = 51.159         |
+----------------------------
+
+
+============================
+L2 cache:                  |
+============================
+block size  = 32    Bytes  |
+ways        = 32           |
+set numbers = 1            |
+total size  = 1     KB     |
+policy      = LRU          |
+----------------------------
+word_btis  = 3            |
+block_btis = 2            |
+index_btis = 0            |
+tag_btis   = 59           |
+----------------------------
+hits         = 84644547    |
+misses       = 388795660   |
+hit rate = 17.879          |
+miss rate = 82.121         |
+----------------------------
+

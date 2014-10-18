@@ -8,7 +8,6 @@
 /* cache replacement policy */
 enum CACHE_POLICY {
 	LRU,		/* replace least recently used block (perfect LRU) */
-	RAMDOM,		/* replace a random block */
 	FIFO		/* replace the oldest block in the set */
 };
 /* access hit or miss*/
@@ -24,10 +23,8 @@ struct CACHE_BLK_T
 {
 	bool 	 valid;
 	bool 	 dirty;
-	uint64_t tag;	/* data block tag value */
-	uint64_t *data;	/* cache block valuem, may multi-word*/	
-	//LRU Hardware unit
-	uint32_t counter; 
+	uint64_t tag;	  /* data block tag value */
+	uint32_t counter; /* staying time counter */
 };
 
 /* cache definition */
@@ -37,6 +34,7 @@ struct CACHE_T
 	CACHE_T(const char *name,int bsize,int assoc,int nsets,enum CACHE_POLICY policy);
 	~CACHE_T();
 
+//=============================DATA MEMBER=======================================//
 	/* parameters */
 	const char *name;   /* cache name */
 	int bsize;			/* block size in bytes */
@@ -44,7 +42,6 @@ struct CACHE_T
 	int nsets;			/* number of sets */
 	enum CACHE_POLICY policy;	/* cache replacement policy */
 	/*segment bit*/
-	uint64_t word_bits;
 	uint64_t block_bits;
 	uint64_t index_bits;
 	uint64_t tag_bits;
@@ -53,17 +50,15 @@ struct CACHE_T
 	/* per-cache stats */
 	uint32_t hits;		/* total number of hits */
 	uint32_t misses;		/* total number of misses */
-	uint32_t replacements;	/* total number of replacements at misses */
 	uint32_t writebacks;		/* total number of writebacks at misses */
-	uint32_t invalidations;	/* total number of external invalidations */
-
-	/* data blocks */
+	/* cache blocks */
 	struct CACHE_BLK_T *blks;			/* pointer to data blocks allocation */
 
+//=============================FUNCTION MEMBER===================================//
 	/* data access function*/
 	HIT_MISS block_access(char cmd,uint64_t addr);
 	/* miss/replacement handler*/
-	CACHE_BLK_T*  choose_victim_blk(uint64_t in_index);
+	int choose_victim_blk(uint64_t in_index);
 };
 
 void dump_cache(CACHE_T *cp);	

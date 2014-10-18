@@ -1,0 +1,43 @@
+./sim_cache "/media/tsaicl/CPU2006_TEST/int"/401.bzip2/all_trace
+============================
+L1 cache:                  |
+============================
+block size  = 32    Bytes  |
+ways        = 32    	   |
+set numbers = 1            |
+total size  = 1     KB     |
+policy      = LRU          |
+----------------------------
+word_btis  = 3            |
+block_btis = 2            |
+index_btis = 0            |
+tag_btis   = 59           |
+----------------------------
+hits         = 703806991   |
+misses       = 56163435    |
+hit rate = 92.610          |
+miss rate = 7.390          |
+----------------------------
+
+
+============================
+L2 cache:                  |
+============================
+block size  = 32    Bytes  |
+ways        = 256   	   |
+set numbers = 1            |
+total size  = 8     KB     |
+policy      = LRU          |
+----------------------------
+word_btis  = 3            |
+block_btis = 2            |
+index_btis = 0            |
+tag_btis   = 59           |
+----------------------------
+hits         = 229885373   |
+misses       = 26707950    |
+hit rate = 89.591          |
+miss rate = 10.409         |
+----------------------------
+
+
