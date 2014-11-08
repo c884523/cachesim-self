@@ -7,14 +7,14 @@ sim_cache: sim_main.o cache.o
 	g++ sim_main.o cache.o -o sim_cache 
 	mv sim_main.o cache.o obj
 sim_main.o:
-	g++ -DL1_W=$(a1) -DL1_S=$(a2) -DL2_W=$(a3) -DL2_S=$(a4) -DSET_L2=$(a5) -c sim_main.cpp
+	g++ -c sim_main.cpp
 cache.o:
 	g++ -c cache.cpp
 .PHONY: clean run perlbench bzip2 gcc mcf gobmk hmmer sjeng lib h264ref omnetpp astar xalancbmk
 clean:
 	rm obj/*.o sim_cache
 run:
-	./sim_cache input/tmp
+	./sim_cache input/my_tmp
 #perlbench:
 #	./sim_cache $(INT_BENCH)/400.perlbench/all_trace
 bzip2:

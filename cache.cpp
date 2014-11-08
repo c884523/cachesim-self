@@ -26,7 +26,6 @@ CACHE_T::CACHE_T(const char *name,int bsize,int assoc,int nsets,enum CACHE_POLIC
 		this->tag_mask = 0;
 	else
 		this->tag_mask = (0xffffffffffffffff<<tag_bits)>>tag_bits;
-	printf("tag_mask=%lx\n",this->tag_mask);
 	//per cache stat
 	this->hits   = 0;
 	this->misses = 0;
@@ -73,6 +72,8 @@ CACHE_T::block_access(char cmd, uint64_t addr)
 		}
 		//no valid & no same tag
 		int i_victim_blk = choose_victim_blk(in_set*assoc);
+		if(blks[i_victim_blk].dirty == true)  /*should do write back*/
+			writebacks++;
 		blks[i_victim_blk].tag     = in_tag;  /*update newest data*/
 		blks[i_victim_blk].valid   = true;
 		blks[i_victim_blk].dirty   = false;
@@ -89,25 +90,29 @@ CACHE_T::block_access(char cmd, uint64_t addr)
 			{
 				is_find = true;
 				blks[in_index].counter = 0;//go stack top
-				if(blks[in_index].dirty == false){//no write back
+				blks[in_index].dirty = true;
+				/*if(blks[in_index].dirty == false){//no write back
 					blks[in_index].dirty = true;
 					BACK = false;
 				}
 				else{
 					writebacks++;//writeback count + 1
 					BACK = true;;
-				}
+				}*/
 			}
 			else 
 				blks[in_index].counter++;//LRU counter+1
 		}
 		if(is_find){
 			hits++;
-			if(!BACK)	 return WRITE_HIT;
-			else 		return WRITE_HIT_BACK;
+			return WRITE_HIT;	
+			//if(!BACK)	return WRITE_HIT;
+			//else 		return WRITE_HIT_BACK;
 		}
 		//no valid & no same tag
 		int i_victim_blk = choose_victim_blk(in_set*assoc);
+		if(blks[i_victim_blk].dirty == true)  /*should do write back*/
+			writebacks++;
 		blks[i_victim_blk].tag     = in_tag;  /*update newest data*/
 		blks[i_victim_blk].valid   = true;
 		blks[i_victim_blk].dirty   = true;	 /*write allocate,so also dirty*/
@@ -138,7 +143,6 @@ int CACHE_T::choose_victim_blk(uint64_t in_index)
 					}
 				}	
 			}
-			//printf("%d\n",out_index);
 		}
 		break;
 //================FIFO policy implementation==========//
