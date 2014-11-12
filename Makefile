@@ -3,11 +3,11 @@ FP_BENCH  ="/media/tsaicl/CPU2006_TEST/float"
 
 
 
-sim_cache: sim_main.o cache.o
-	g++ sim_main.o cache.o -o sim_cache 
-	mv sim_main.o cache.o obj
-sim_main.o:
-	g++ -c sim_main.cpp
+sim_cache: sim_cache.o cache.o
+	g++ sim_cache.o cache.o -o sim_cache 
+	mv sim_cache.o cache.o obj
+sim_cache.o:
+	g++ -c sim_cache.cpp
 cache.o:
 	g++ -c cache.cpp
 .PHONY: clean run perlbench bzip2 gcc mcf gobmk hmmer sjeng lib h264ref omnetpp astar xalancbmk
