@@ -21,7 +21,9 @@ void tree_insert(TREE_NODE **root,uint64_t i_time, uint64_t i_addr);
 void tree_delete();
 void tree_find();
 void tree_free(TREE_NODE *t);
+void mytmp(TREE_NODE **t);
 void tree_print(TREE_NODE **t);
+
 
 
 #endif

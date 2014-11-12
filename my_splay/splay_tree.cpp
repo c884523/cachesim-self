@@ -59,20 +59,24 @@ TREE_NODE* tree_rotate(TREE_NODE **check_node){
 	father  = cur->parent;
 	grandpa = father->parent;
 	
+	//cout<<cur->time<<endl<<father->time<<endl<<grandpa->time<<endl;
 	//do rotation
 	while(true){
+		//cout<<cur->time<<",";
 		if(father == grandpa){	//father is root
 			if(cur == father->left){	//zig
+				//cout<<"zig"<<endl;
 				father->left = cur->right;
-				cur->right   = father;
 				if(cur->right != NULL)
 					cur->right->parent = father;
+				cur->right   = father;
 			}
 			else{ 						//zag
+				//cout<<"zag"<<endl;
 				father->right = cur->left;
-				cur->left	  = father;
 				if(cur->left != NULL)
 					cur->left->parent = father;
+				cur->left	  = father;
 			}
 			father->parent = cur;
 			cur->parent    = cur;
@@ -82,7 +86,16 @@ TREE_NODE* tree_rotate(TREE_NODE **check_node){
 			bool is_root = false;
 			if(grandpa->parent == grandpa)//grandpa is root
 				is_root = true;
+			if(!is_root){//isn't root , so grandpa should be assgined first
+				if(grandpa->parent->left == grandpa)
+					grandpa->parent->left  = cur;
+				else 
+					grandpa->parent->right = cur;
+				cur->parent                = grandpa->parent;//should first assign to cur 
+			}
+			//start to rotate
 			if(cur == father->left && father == grandpa->left){//zig-zig
+				//cout<<"zig-zig"<<endl;
 				//subtree change
 				grandpa->left             = father->right;
 				if(father->right != NULL)
@@ -91,13 +104,13 @@ TREE_NODE* tree_rotate(TREE_NODE **check_node){
 				if(cur->right != NULL)
 					cur->right->parent    = father;
 				//rotate
-				cur->parent       = grandpa->parent;//should first assign to cur 
 				father->right     = grandpa;
 				grandpa->parent   = father; 
 				cur->right        = father;
 				father->parent    = cur;
 			}
 			else if(cur == father->right && father == grandpa->right){//zag-zag
+				//cout<<"zag-zag"<<endl;
 				//subtree change
 				grandpa->right           = father->left;
 				if(father->left != NULL)
@@ -106,13 +119,13 @@ TREE_NODE* tree_rotate(TREE_NODE **check_node){
 				if(cur->left != NULL)
 					cur->left->parent    = father;
 				//rotate
-				cur->parent= grandpa->parent;//should first assign to cur 
 				father->left      = grandpa;
 				grandpa->parent   = father; 
 				cur->left         = father;
 				father->parent    = cur;
 			}
 			else if(cur == father->right && father == grandpa->left){//zig-zag
+				//cout<<"zig-zag"<<endl;
 				//subtree change
 				grandpa->left         = cur->right;
 				if(cur->right != NULL)
@@ -121,7 +134,6 @@ TREE_NODE* tree_rotate(TREE_NODE **check_node){
 				if(cur->left != NULL)
 					cur->left->parent = father;
 				//rotate
-				cur->parent       = grandpa->parent;//should first assign to cur 
 				cur->left         = father;
 				cur->right        = grandpa;
 				grandpa->parent   = cur; 
@@ -129,6 +141,7 @@ TREE_NODE* tree_rotate(TREE_NODE **check_node){
 				
 			}
 			else if(cur == father->left && father == grandpa->right){//zag-zig
+				//cout<<"zag-zig"<<endl;
 				//subtree change
 				grandpa->right         = cur->left;
 				if(cur->left != NULL)
@@ -137,7 +150,6 @@ TREE_NODE* tree_rotate(TREE_NODE **check_node){
 				if(cur->right != NULL)
 					cur->right->parent = father;
 				//rotate
-				cur->parent       = grandpa->parent;//should first assign to cur 
 				cur->left         = grandpa;
 				cur->right        = father;
 				grandpa->parent   = cur; 
@@ -146,12 +158,13 @@ TREE_NODE* tree_rotate(TREE_NODE **check_node){
 			//if grandpa is root , break
 			if(is_root){
 				cur->parent = cur;
-				//cout<<cur<<endl<<cur->right<<endl<<cur->right->right<<endl;
 				break;
 			}
+			//assign new father,grandpa
+			father  = cur->parent;
+			grandpa = father->parent;
 		}
 	}
-	cout<<"d"<<endl;
 	return cur;
 }
 
@@ -166,15 +179,13 @@ void tree_free(TREE_NODE *t)
 int level=1;
 void tree_print(TREE_NODE **t)
 {
-	if(t==NULL){ 
-		cout<<"d";
-		level--;
-		return;
+	if(*t != NULL)
+	{
+		level++;
+		tree_print(&((*t)->left));
+		cout<<"key="<<(*t)->time<<",level="<<level<<endl;
+		level++;
+		tree_print(&((*t)->right));
 	}
-	level++;
-	tree_free((*t)->left);
-	level++;
-	tree_free((*t)->right);
-	cout<<"key="<<(*t)->time<<",level="<<level<<"parent="<<(*t)->parent->time<<endl;
-
+	level--;
 }
