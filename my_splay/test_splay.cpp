@@ -16,7 +16,10 @@ int main(void)
 	tree_insert(&t,9,0);
 	tree_insert(&t,1,0);
 	tree_insert(&t,2,0);
-	tree_insert(&t,12,0);
+	distance_compute(&t,7);
+	distance_compute(&t,3);
+	distance_compute(&t,10);
+	distance_compute(&t,6);
 	tree_print(&t);
 	return 0;
 }

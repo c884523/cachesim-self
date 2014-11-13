@@ -17,11 +17,9 @@ struct TREE_NODE {
 
 TREE_NODE* tree_create(uint64_t i_time,uint64_t i_addr);
 TREE_NODE* tree_rotate(TREE_NODE **check_node);//do rotation
+uint64_t distance_compute(TREE_NODE **root, uint64_t f_time);
 void tree_insert(TREE_NODE **root,uint64_t i_time, uint64_t i_addr);
-void tree_delete();
-void tree_find();
-void tree_free(TREE_NODE *t);
-void mytmp(TREE_NODE **t);
+void tree_delete(TREE_NODE **check_node);
 void tree_print(TREE_NODE **t);
 
 
