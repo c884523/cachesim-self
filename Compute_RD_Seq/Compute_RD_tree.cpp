@@ -23,7 +23,7 @@ int main(int argc,char*argv[])
 	char c;
 	//==========Compute reuse distance==========
 	while(fscanf(fp,"%c%lx\n",&c,&m_Address) != EOF ){
-		counts++;
+		//counts++;
 		//printf("%c %lx\n",c,m_Address);//pipe file for monitor 
 		uint64_t dist=0;
 		uint64_t last_t = HASH_TABLE[m_Address];

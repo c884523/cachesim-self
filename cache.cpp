@@ -31,6 +31,7 @@ CACHE_T::CACHE_T(const char *name,int bsize,int assoc,int nsets,enum CACHE_POLIC
 	this->misses = 0;
 	this->writebacks    = 0;
 	//cache block array
+	printf("%d\n",assoc*nsets);
 	this->blks = (CACHE_BLK_T*) malloc(sizeof(CACHE_BLK_T)*assoc*nsets);	
 	for(int i=0 ; i < assoc*nsets ; i++){
 		this->blks[i].valid = false;

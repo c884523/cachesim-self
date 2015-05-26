@@ -23,7 +23,6 @@ uint64_t G_MAX_DIST;
 int NUM_THREAD;
 
 
-
 void* compute_RD(void *input)
 {
 	//==========Inital section============
@@ -45,6 +44,7 @@ void* compute_RD(void *input)
 	//==========Compute reuse distance==========
 	//Phase 1, local reuse distance
 	while(fscanf(fp,"%c%lx\n",&c,&m_Address) != EOF ){
+		m_Address >>= 6;
 		uint64_t dist=0;
 		uint64_t last_t = HASH_TABLE[m_Address];
 		//dist = infinite 
@@ -110,7 +110,8 @@ void* compute_RD(void *input)
 		pthread_mutex_unlock(&m_WRITE_RD);
 		pthread_barrier_wait(&barr[NUM_THREAD-i-1]);//each loop should start at the same time
 	}
-	tree_free(&tree);
+	cout<<PID<<','<<"over!\n";
+	//tree_free(&tree);
 }
 
 int main(int argc,char *argv[])
@@ -144,7 +145,7 @@ int main(int argc,char *argv[])
 		fprintf(fp,"%-6lu %-6lu\n", i, G_ReuseDistance[i]);
 	fprintf(fp,"-1 %-6lu\n", G_INFINITE);
 
-	
+		
 	for(int i=0; i < NUM_THREAD+1;i++)
 		pthread_barrier_destroy(&barr[i]);
 	pthread_mutex_destroy(&m_WRITE_RD);

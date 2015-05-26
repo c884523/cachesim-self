@@ -344,4 +344,5 @@ void tree_free(TREE_NODE **t)
 		tree_free(&((*t)->right));
 		delete (*t);
 	}
+	
 }
